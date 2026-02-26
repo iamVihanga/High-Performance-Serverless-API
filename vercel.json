@@ -2,6 +2,5 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "fluid": true,
   "regions": ["iad1"],
-  "buildCommand": "tsc",
   "outputDirectory": "dist"
 }
