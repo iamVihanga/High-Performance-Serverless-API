@@ -2,6 +2,7 @@
   "name": "high-performance-serverless-api",
   "type": "module",
   "scripts": {
+    "build": "bun build src/index.ts --outdir dist --target node --format esm",
     "dev:vercel": "vercel dev",
     "build:vercel": "vercel build",
     "deploy:vercel": "vercel deploy",
