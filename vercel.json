@@ -1,7 +1,5 @@
 {
   "bunVersion": "1.x",
-  "buildCommand": "bun run build",
-  "outputDirectory": "dist",
   "fluid": true,
   "regions": ["iad1"]
 }
