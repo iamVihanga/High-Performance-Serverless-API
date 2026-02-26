@@ -1,11 +1,26 @@
 {
   "name": "high-performance-serverless-api",
   "type": "module",
+  "scripts": {
+    "dev:vercel": "vercel dev",
+    "build:vercel": "vercel build",
+    "deploy:vercel": "vercel deploy",
+    "deploy:vercel:prod": "vercel deploy --prod",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
   "dependencies": {
-    "hono": "^4.12.2"
+    "@hono/zod-validator": "^0.7.6",
+    "@neondatabase/serverless": "^1.0.2",
+    "drizzle-orm": "^0.45.1",
+    "hono": "^4.12.2",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
+    "drizzle-kit": "^0.31.9",
     "tsx": "^4.7.1",
     "typescript": "^5.8.3"
   }

@@ -152,10 +152,10 @@ Update `package.json` to add these scripts:
 ```json
 {
   "scripts": {
-    "dev": "vercel dev",
-    "build": "vercel build",
-    "deploy": "vercel deploy",
-    "deploy:prod": "vercel deploy --prod",
+    "dev:vercel": "vercel dev",
+    "build:vercel": "vercel build",
+    "deploy:vercel": "vercel deploy",
+    "deploy:vercel:prod": "vercel deploy --prod",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
@@ -164,46 +164,48 @@ Update `package.json` to add these scripts:
 }
 ```
 
-| Script        | What It Does                                                                 |
-| ------------- | ---------------------------------------------------------------------------- |
-| `dev`         | Starts local Vercel dev server, emulating the edge/serverless environment    |
-| `build`       | Builds the project as Vercel would in CI                                     |
-| `deploy`      | Deploys to Vercel preview environment                                        |
-| `deploy:prod` | Deploys to Vercel production                                                 |
-| `db:generate` | Reads your Drizzle schema and generates SQL migration files                  |
-| `db:migrate`  | Applies pending migrations to your Neon database                             |
-| `db:push`     | Pushes schema directly to DB (quick dev iteration, skips migration files)    |
-| `db:studio`   | Opens Drizzle Studio — a visual DB browser at `https://local.drizzle.studio` |
+| Script               | What It Does                                                                 |
+| -------------------- | ---------------------------------------------------------------------------- |
+| `dev:vercel`         | Starts local Vercel dev server, emulating the edge/serverless environment    |
+| `build:vercel`       | Builds the project as Vercel would in CI                                     |
+| `deploy:vercel`      | Deploys to Vercel preview environment                                        |
+| `deploy:vercel:prod` | Deploys to Vercel production                                                 |
+| `db:generate`        | Reads your Drizzle schema and generates SQL migration files                  |
+| `db:migrate`         | Applies pending migrations to your Neon database                             |
+| `db:push`            | Pushes schema directly to DB (quick dev iteration, skips migration files)    |
+| `db:studio`          | Opens Drizzle Studio — a visual DB browser at `https://local.drizzle.studio` |
 
 > **Why `vercel dev` for local development?** It emulates Vercel's routing, environment variables, and runtime behavior. Your local environment matches production as closely as possible, avoiding "works on my machine" issues.
+
+> **Why use `*:vercel` for script commands?** Since commands like `vercel dev` and `vercel build` invokes the development and build commands, they cannot invoke same commands listed in package.json file itself.
 
 ### Step 3: Create Project Folder Structure
 
 ```
 src/
-├── index.ts                # App entry: middleware composition, route mounting, Vercel export
+├── index.ts                  # App entry: middleware composition, route mounting, Vercel export
 ├── db/
-│   ├── index.ts            # Database connection (Neon HTTP client + Drizzle instance)
-│   └── schema/
-│       ├── index.ts         # Schema barrel export (re-exports all table schemas)
-│       └── tasks.ts         # Tasks table definition
+│   ├── index.ts              # Database connection (Neon HTTP client + Drizzle instance)
+│   └── schemas/
+│       ├── index.ts          # Schema barrel export (re-exports all table schemas)
+│       └── tasks.schema.ts   # Tasks table definition
 ├── routes/
-│   └── tasks.ts             # Tasks CRUD route handlers
+│   └── tasks.routes.ts       # Tasks CRUD route handlers
 ├── middleware/
-│   ├── timing.ts            # Server-Timing header middleware (performance monitoring)
-│   └── error-handler.ts     # Global error handler (consistent error responses)
+│   ├── timing.ts             # Server-Timing header middleware (performance monitoring)
+│   └── error-handler.ts      # Global error handler (consistent error responses)
 └── types/
-    └── index.ts             # Shared TypeScript types & interfaces
+    └── index.ts              # Shared TypeScript types & interfaces
 
-drizzle.config.ts            # Drizzle Kit configuration (migrations, DB connection)
-vercel.json                  # Vercel deployment configuration (runtime, regions, routes)
-.env.example                 # Template showing required environment variables
-.env                         # Local environment variables (git-ignored)
+drizzle.config.ts             # Drizzle Kit configuration (migrations, DB connection)
+vercel.json                   # Vercel deployment configuration (runtime, regions, routes)
+.env.example                  # Template showing required environment variables
+.env                          # Local environment variables (git-ignored)
 ```
 
 **Why this structure?**
 
-- **`db/schema/` directory**: Schemas are separated by domain entity. As the project grows, you add `users.ts`, `projects.ts`, etc. The barrel `index.ts` re-exports everything — Drizzle Kit reads this single entry point.
+- **`db/schemas/` directory**: Schemas are separated by domain entity. As the project grows, you add `users.ts`, `projects.ts`, etc. The barrel `index.ts` re-exports everything — Drizzle Kit reads this single entry point.
 - **`routes/` directory**: Each file is a self-contained Hono router for one resource. Easy to find, easy to test, easy to add new resources.
 - **`middleware/` directory**: Reusable middleware separated from route logic. Enterprise apps accumulate middleware (auth, rate limiting, logging, etc.) — keeping them modular prevents `index.ts` from becoming a monolith.
 - **`types/` directory**: Shared types prevent circular dependencies between routes and DB layers.
